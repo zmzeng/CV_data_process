@@ -12,6 +12,19 @@ def get_file(filepath):
     return all_dir  # .decode('gbk')  # .decode('gbk')是解决中文显示乱码问题
 
 
+def filter_dir(allDir):
+    output_dir = []
+    for everyDir in allDir:
+        f = open(everyDir, 'r')
+        lines = f.readlines(2)
+        print lines
+        for line in lines:
+            if line.find('Cyclic Voltammetry\n') != -1:
+                output_dir.append(everyDir)
+    print output_dir
+    return output_dir
+
+
 # 读取文件内容并处理
 def process_file(filename):
     f = open(filename, 'r')  # r 代表read
@@ -54,15 +67,17 @@ def process_file(filename):
 if __name__ == '__main__':
 
     print 'Please put cv data(.txt files) in D:/auto/%s' \
-          'Press Enter to continue'%os.linesep
-    a = raw_input()
+          'Press Enter to continue' % os.linesep
+    raw_input()
     # 指定存放cv txt数据位置
     try:
         allDir = get_file('D:\\auto\\')
     except StandardError:
         print 'can\'t get files'
-    # 遍历文件夹中的文件，并进行处理
-    for everyDir in allDir:
+    # 遍历文件夹中的文件，并进行筛选
+    filtered_Dir = filter_dir(allDir)
+    # 遍历筛选后的列表，并处理和输出
+    for everyDir in filtered_Dir:
         if everyDir.find('_output') == -1 and everyDir.find('.txt') != -1:
             print 'processing %s' % everyDir
             try:
@@ -71,5 +86,5 @@ if __name__ == '__main__':
                 print 'The file is not a cv data'
                 continue
     print '%sAll done!%s' \
-          'Press Enter to exit'%(os.linesep,os.linesep)
+          'Press Enter to exit' % (os.linesep, os.linesep)
     raw_input()
