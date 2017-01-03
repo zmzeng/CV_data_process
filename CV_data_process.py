@@ -15,13 +15,12 @@ def get_file(filepath):
 def filter_dir(allDir):
     output_dir = []
     for everyDir in allDir:
-        f = open(everyDir, 'r')
-        lines = f.readlines(2)
-        print lines
-        for line in lines:
-            if line.find('Cyclic Voltammetry\n') != -1:
-                output_dir.append(everyDir)
-    print output_dir
+        if everyDir.find('_output') == -1 and everyDir.find('.txt') != -1:
+            f = open(everyDir, 'r')
+            lines = f.readlines()
+            for line in lines:
+                if line.find('Cyclic Voltammetry\n') != -1:
+                    output_dir.append(everyDir)
     return output_dir
 
 
@@ -76,15 +75,15 @@ if __name__ == '__main__':
         print 'can\'t get files'
     # 遍历文件夹中的文件，并进行筛选
     filtered_Dir = filter_dir(allDir)
+    print filtered_Dir
     # 遍历筛选后的列表，并处理和输出
-    for everyDir in filtered_Dir:
-        if everyDir.find('_output') == -1 and everyDir.find('.txt') != -1:
-            print 'processing %s' % everyDir
-            try:
-                process_file(everyDir)
-            except StandardError:
-                print 'The file is not a cv data'
-                continue
+    for everyDir in filtered_Dir:       
+        print 'processing %s' % everyDir
+        try:
+            process_file(everyDir)
+        except StandardError:
+            print 'The file is not a cv data'
+            continue
     print '%sAll done!%s' \
           'Press Enter to exit' % (os.linesep, os.linesep)
     raw_input()
