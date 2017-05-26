@@ -11,11 +11,11 @@ def get_file(filepath):
         all_dir.append(child)
     return all_dir  # .decode('gbk')  # .decode('gbk')是解决中文显示乱码问题
 
-
+#筛选掉非数据文件和处理后的输出文件
 def filter_dir(allDir):
     output_dir = []
     for everyDir in allDir:
-        if everyDir.find('_output') == -1 and everyDir.find('.txt') != -1:
+        if everyDir.find('cycle') == -1 and everyDir.find('.txt') != -1:
             f = open(everyDir, 'r')
             lines = f.readlines()
             for line in lines:
@@ -28,7 +28,7 @@ def filter_dir(allDir):
 def process_file(filename):
     f = open(filename, 'r')  # r 代表read
     # 定义output文件名
-    filename_output = os.path.join('%s%s' % (filename, '_output.txt'))
+    filename_output = os.path.join('%s%s' % (filename, '_first cycle.txt'))
     f_output = open(filename_output, 'w')
     line = f.readline()  # 调用文件的 readline()方法
     # 获取段数，并讲info信息写入output文件
@@ -42,17 +42,26 @@ def process_file(filename):
     f_output.write('%s' % line)
     line = f.readline()
     f_output.write('%s' % line)
-    # 获取初始电压
+    # 从第一行数据获取初始电压
     line = f.readline()
     InitE = (line.split(',')[0])
     print 'Init E : %s' % InitE
+    # 输出第一圈
+    f_output.write(line)
+    line = f.readline()
+    while line.find(InitE) == -1:
+        f_output.write(line)
+        line = f.readline()
+    f_output.close()
     # 找到最后一圈的位置
-    i = 1
+    i = 2
     while not i > int(segment_num) / 2 - 1:
         line = f.readline()
         if line.find(InitE) == 0 or line.find('-' + InitE) == 0:
             i += 1
     # 把最后一圈的数据都写入output文件
+    filename_output = os.path.join('%s%s' % (filename, '_last cycle.txt'))
+    f_output = open(filename_output, 'w')
     while 1:
         if not line:
             break
