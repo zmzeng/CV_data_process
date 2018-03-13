@@ -42,5 +42,22 @@ for i=1:4:length(filename)-3
     hold all;
 end
 
+% output all data in signalDifferenceData.txt, add 20180313 by zmzeng 
+f = fopen('DifferenceSpectrum.txt','w');
+fprintf(f,'%s ,%s , ', legendName{:});
+fprintf(f, '\n');
+fprintf(f, 'time, signal');
+fprintf(f, '\n');
+fclose(f);
+
+signalDifferenceData = [time{1},signal_Difference{1}];
+for i=2:length(signal_Difference)
+    if isempty(signal_Difference{i})
+    else
+        signalDifferenceData = [signalDifferenceData time{i},signal_Difference{i}];
+    end
+end
+save('DifferenceSpectrum.txt', 'signalDifferenceData', '-append', '-ascii');
+
 cd('D:/optical');
 
