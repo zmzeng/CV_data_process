@@ -72,13 +72,13 @@ class arc2Distance(object):
 
     # output all data
     def outputData(self):
-        file = open(self.file2Process[0:-4] + '_Result.txt', 'w')
+        file = open(self.file2Process[0:-4] + '_Distance.txt', 'w')
         file.write('Time    Distance(Ni-Zr)\n')
         for time, distance in zip(self.listOfTime, self.listOfDistance):
             file.write(time + '    ' + distance + '\n')
         file.close()
         print('all done!')
-        print('result is stored in ' + self.file2Process[0:-4] + '_Result.txt \n')
+        print('result is stored in ' + self.file2Process[0:-4] + '_Distance.txt \n')
 
     # conver arc to distance!
     def main(self):
