@@ -2,7 +2,9 @@
 
 import re
 import sys
-import matplotlib.pyplot as plt
+import matplotlib
+#import matplotlib.pyplot as plt
+#matplotlib.use('Agg')
 
 class xpsProcess(object):
     """
@@ -91,7 +93,7 @@ class xpsProcess(object):
                 atom = self.regionMatchAtom(regionOfSweep)
             except Exception:
                 if numberOfUnmatchedAtom == 0:
-                    atom = 'whole spectrum'
+                    atom = 'whole_spectrum'
                 else:
                     atom = ('unknown atoms %s' % numberOfUnmatchedAtom)
                 numberOfUnmatchedAtom = numberOfUnmatchedAtom + 1
@@ -161,15 +163,15 @@ class xpsProcess(object):
                 file.write('%.2f  %s  %.2f \n' %(energyRevised, counts, energy))
             file.close()
 
-    def plotData(self):
-        for i in range(0, len(self.atoms)):
-            plt.figure('XPS spectrum: ' + self.atoms[i])
-            plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
-            plt.xlabel('Energe (eV)')
-            plt.ylabel('Counts')
-            plt.title('XPS spectrum: ' + self.atoms[i])
-            plt.gca().invert_xaxis() 
-            plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
+    # def plotData(self):
+    #     for i in range(0, len(self.atoms)):
+    #        plt.figure('XPS spectrum: ' + self.atoms[i])
+    #        plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
+    #        plt.xlabel('Energe (eV)')
+    #        plt.ylabel('Counts')
+    #        plt.title('XPS spectrum: ' + self.atoms[i])
+    #        plt.gca().invert_xaxis() 
+    #        plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
 
     def main(self):
         try:
@@ -179,11 +181,14 @@ class xpsProcess(object):
             raise
         self.getDelta()
         self.outputData()
-        self.plotData()
+#        self.plotData()
+        print('                    ###############')
+        print('                    #  all done!  #' )
+        print('                    ###############\n')
 
 if __name__=='__main__':
 
-    
+
     try:
         test = xpsProcess(*sys.argv)
     except TypeError as e:
@@ -193,20 +198,17 @@ if __name__=='__main__':
         input('\npress Enter to quit.\n\n')
     else:
         try:
-            test.main()
-            print('                    ###############')
-            print('                    #  all done!  #' )
-            print('                    ###############\n')
-            print('Press Enter to quit.\n')
-            standardEnergyOfCarbon = input('Or \n\nInput the standard energy of Carbon if it is *NOT* 284.6\n')
-            if standardEnergyOfCarbon:
-                print('\n')
-                test = xpsProcess(*sys.argv, standardEnergyOfCarbon)
-                test.main()
+           test.main()
+           print('Press Enter to quit.\n')
+           standardEnergyOfCarbon = input('Or \n\nInput the standard energy of Carbon if it is *NOT* 284.6\n')
+           if standardEnergyOfCarbon:
+               print('\n')
+               test.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
+               test.main()
         except FileNotFoundError as e:
-            print(e)
-            input('\npress Enter to quit.\n\n')
+           print(e)
+           input('\npress Enter to quit.\n\n')
         except Exception as e:
-            print(e)
-            input('\npress Enter to quit.\n\n')
+           print(e)
+           input('\npress Enter to quit.\n\n')
 
