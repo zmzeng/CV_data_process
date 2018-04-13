@@ -38,6 +38,7 @@ class FLS980Process(object):
             for j in range(0, len(self.data_raw[i])):
                 if self.max < self.data_raw[i][j]:
                     self.max = self.data_raw[i][j]
+        print('------>maximum is ' + str(self.max))
 
     def normalize_data(self):
         """value_normalized = value_original / maximum"""

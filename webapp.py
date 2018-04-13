@@ -3,10 +3,11 @@
 import bottle
 import json
 import subprocess
+import sys
 from xpsProcess import xpsProcess
 from FLS980 import FLS980Process
 
-upload_path='/tmp/WebApp/temp'
+path_of_temp_file='/tmp/WebApp/temp'
 
 @bottle.route('/')
 def welcome():          
@@ -20,22 +21,16 @@ def xps():
 @bottle.post('/xpsProcess')
 def xps_upload():
     info = get_app_info('xpsProcess')
-
-    command = 'rm ' + upload_path + '/*'
-    subprocess.call(command, shell=True)
-
-    uploadfile = bottle.request.files.get('uploadfile')
+    filename = get_upload_file()
     standard_energy_of_Carbon = bottle.request.forms.get('standard_energy_of_Carbon')
 
     try:
-        uploadfile.save(upload_path, overwrite=True)#overwrite参数是指覆盖同名文件
-        print('get uploadfile and save...')
         if(standard_energy_of_Carbon == ""):
-            test = xpsProcess.xpsProcess('py', upload_path + '/' + uploadfile.filename)
+            test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
         else:
-            test = xpsProcess.xpsProcess('py', upload_path + '/' + uploadfile.filename, float(standard_energy_of_Carbon))
+            test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
+        #TODO: use subprocess pipe out for response_info
         test.main()
-
         response_info = []
         response_info.append('------>  ' + 'The file to process is ' + test.file2Process)
         response_info.append('------>  ' + 'The standard energy of C is set to ' + str(test.standardEnergyOfCarbon))
@@ -43,17 +38,15 @@ def xps_upload():
         response_info.append('------>  ' + 'delta is ' + str(test.delta))
         response_info.append('click here to download output file.')
         info['response_info'] = response_info
-
-        command = 'zip -jJ /tmp/WebApp/temp/' + uploadfile.filename[0:-4] + '.zip /tmp/WebApp/temp/*'
-        subprocess.call(command, shell=True)
-        print('wrap output files.')
-
-        info['download_link'] = '/output/' + uploadfile.filename[0:-4] + '.zip'
+        info['download_link'] = '/output/' + filename[0:-4] + '.zip'
         info['respones_status'] = "success!"
+
+        wrap_result_files(filename)
 
         return bottle.template('app', info)
 
-    except:
+    except Exception as e:
+        print(e)
         info['respones_status'] = "something wrong with your data file!"
         return bottle.template('app', info)
 
@@ -65,37 +58,29 @@ def fls980():
 @bottle.post('/FLS980')
 def fls980_upload():
     info = get_app_info('FLS980')
-    command = 'rm ' + upload_path + '/*'
-    subprocess.call(command, shell=True)
-
-    uploadfile = bottle.request.files.get('uploadfile')
-
+    filename = get_upload_file()
     try:
-        uploadfile.save(upload_path, overwrite=True)#overwrite参数是指覆盖同名文件
-        print('get uploadfile and save...')
-        test = FLS980Process.FLS980Process(upload_path + '/' + uploadfile.filename)
+        test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
         test.main()
-
+        print('process complete!')
         response_info = []
+        response_info.append('------>maximum is ' + str(test.max))
         response_info.append('all done!')
         response_info.append('click here to download output file.')
         info['response_info'] = response_info
-        command = 'zip -jJ /tmp/WebApp/temp/' + uploadfile.filename[0:-4] + '.zip /tmp/WebApp/temp/*'
-        subprocess.call(command, shell=True)
-        print('wrap output files.')
-
-        info['download_link'] = '/output/' + uploadfile.filename[0:-4] + '.zip'
+        wrap_result_files(filename)
+        info['download_link'] = '/output/' + filename[0:-4] + '.zip'
         info['respones_status'] = "success!"
-
         return bottle.template('app', info)
-    except:
+    except Exception as e:
+        print(e)
         info['respones_status'] = "something wrong with your data file!"
         return bottle.template('app', info)
 
 @bottle.route('/output/<filename:path>')
 def file_download(filename):
     print('download ' + filename)
-    return bottle.static_file(filename, root=upload_path, download=filename)
+    return bottle.static_file(filename, root=path_of_temp_file, download=filename)
 
 @bottle.route('/static/<filename>')
 def get_static(filename):
@@ -109,6 +94,24 @@ def get_app_info(appname):
     with open(path_json_of_appinfo, 'r') as f:
         info = json.load(fp=f)
     return info
+
+def get_upload_file():
+    command = 'rm ' + path_of_temp_file + '/*'
+    subprocess.call(command, shell=True)
+    file_upload = bottle.request.files.get('file_upload')
+    try:
+        file_upload.save(path_of_temp_file, overwrite=True)
+        print('get and save upload file successfully')
+        return file_upload.filename
+    except Exception as e:
+        print(e)
+        print('no file is upload.')
+        return ''
+
+def wrap_result_files(filename):
+    command = 'zip -jJ ' + path_of_temp_file + '/' + filename[0:-4] + '.zip ' + path_of_temp_file + '/*'
+    subprocess.call(command, shell=True)
+    print('wrap output files.')
 
 if __name__ == "__main__":
     bottle.run(host='127.0.0.1', port=9091, debug=True)

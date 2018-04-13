@@ -2,7 +2,7 @@
 
 import re
 import sys
-import matplotlib
+#import matplotlib
 #import matplotlib.pyplot as plt
 #matplotlib.use('Agg')
 
@@ -45,19 +45,8 @@ class xpsProcess(object):
 
     def __init__(self, py, file2Process, standardEnergyOfCarbon=284.6):
 
-        welcome = '''
-#######################################################
-
-  X-ray photoelectron spectroscopy data process script  
-                    code by zmzeng.
-                       20180314
-
-#######################################################
-    '''
-        print(welcome)
         self.file2Process = file2Process
         self.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
-
         print('------>  ' + 'The file to process is ' + self.file2Process)
         print('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon) +'\n')
         self.atoms = []
@@ -182,12 +171,19 @@ class xpsProcess(object):
         self.getDelta()
         self.outputData()
 #        self.plotData()
-        print('                    ###############')
-        print('                    #  all done!  #' )
-        print('                    ###############\n')
 
 if __name__=='__main__':
 
+    welcome = '''
+#######################################################
+
+X-ray photoelectron spectroscopy data process script  
+                code by zmzeng.
+                   20180314
+
+#######################################################
+'''
+    print(welcome)
 
     try:
         test = xpsProcess(*sys.argv)
@@ -198,13 +194,16 @@ if __name__=='__main__':
         input('\npress Enter to quit.\n\n')
     else:
         try:
-           test.main()
-           print('Press Enter to quit.\n')
-           standardEnergyOfCarbon = input('Or \n\nInput the standard energy of Carbon if it is *NOT* 284.6\n')
-           if standardEnergyOfCarbon:
-               print('\n')
-               test.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
-               test.main()
+            test.main()
+            print('                    ###############')
+            print('                    #  all done!  #' )
+            print('                    ###############\n')
+            print('Press Enter to quit.\n')
+            standardEnergyOfCarbon = input('Or \n\nInput the standard energy of Carbon if it is *NOT* 284.6\n')
+            if standardEnergyOfCarbon:
+                print('\n')
+                test.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
+                test.main()
         except FileNotFoundError as e:
            print(e)
            input('\npress Enter to quit.\n\n')
