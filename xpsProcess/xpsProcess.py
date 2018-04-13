@@ -46,12 +46,15 @@ class xpsProcess(object):
     def __init__(self, py, file2Process, standardEnergyOfCarbon=284.6):
 
         self.file2Process = file2Process
+        self.info = []
         self.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
         print('------>  ' + 'The file to process is ' + self.file2Process)
         print('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon) +'\n')
+        self.info.append('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon))
         self.atoms = []
         self.spectrum = []
         self.delta = 0.0
+        
 
     def readFile(self):
         file = open(self.file2Process, 'r')
@@ -65,6 +68,7 @@ class xpsProcess(object):
                 break
         file.close()
         print('------>  ' + 'Found atoms: '+ str(self.atoms[1:]) +'\n')
+        self.info.append('------>  ' + 'Found atoms: '+ str(self.atoms[1:]))
 
     def getData(self, file, numberOfUnmatchedAtom):
         """
@@ -131,8 +135,11 @@ class xpsProcess(object):
         energyOfCarbon = energyData[indexOfMaxCounts]
         self.delta = energyOfCarbon - self.standardEnergyOfCarbon
         print('------>  ' + 'max position is ' + str(energyOfCarbon))
+        self.info.append('------>  ' + 'max position is ' + str(energyOfCarbon))
         print('------>  ' + 'max counts is ' + str(maxCounts))
+        self.info.append('------>  ' + 'max counts is ' + str(maxCounts))
         print('------>  ' + 'delta is ' + str(self.delta) + '\n')
+        self.info.append('------>  ' + 'delta is ' + str(self.delta))
 
     def reviseData(self, energyData):
         """Revise data according to Delta.
@@ -161,6 +168,10 @@ class xpsProcess(object):
     #        plt.title('XPS spectrum: ' + self.atoms[i])
     #        plt.gca().invert_xaxis() 
     #        plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
+
+    @property
+    def response_info(self):
+        return self.info
 
     def main(self):
         try:

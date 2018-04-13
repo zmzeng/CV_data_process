@@ -29,20 +29,9 @@ def xps_upload():
             test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
         else:
             test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
-        #TODO: use subprocess pipe out for response_info
         test.main()
-        response_info = []
-        response_info.append('------>  ' + 'The file to process is ' + test.file2Process)
-        response_info.append('------>  ' + 'The standard energy of C is set to ' + str(test.standardEnergyOfCarbon))
-        response_info.append('------>  ' + 'Found atoms: '+ str(test.atoms[1:]))
-        response_info.append('------>  ' + 'delta is ' + str(test.delta))
-        response_info.append('click here to download output file.')
-        info['response_info'] = response_info
-        info['download_link'] = '/output/' + filename[0:-4] + '.zip'
-        info['respones_status'] = "success!"
-
-        wrap_result_files(filename)
-
+        info['response_info'] = test.response_info
+        wrap_result_files(filename, info)
         return bottle.template('app', info)
 
     except Exception as e:
@@ -62,15 +51,8 @@ def fls980_upload():
     try:
         test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
         test.main()
-        print('process complete!')
-        response_info = []
-        response_info.append('------>maximum is ' + str(test.max))
-        response_info.append('all done!')
-        response_info.append('click here to download output file.')
-        info['response_info'] = response_info
-        wrap_result_files(filename)
-        info['download_link'] = '/output/' + filename[0:-4] + '.zip'
-        info['respones_status'] = "success!"
+        info['response_info'] = test.response_info
+        wrap_result_files(filename, info)
         return bottle.template('app', info)
     except Exception as e:
         print(e)
@@ -108,10 +90,13 @@ def get_upload_file():
         print('no file is upload.')
         return ''
 
-def wrap_result_files(filename):
+def wrap_result_files(filename, info):
     command = 'zip -jJ ' + path_of_temp_file + '/' + filename[0:-4] + '.zip ' + path_of_temp_file + '/*'
     subprocess.call(command, shell=True)
     print('wrap output files.')
+    info['download_link'] = '/output/' + filename[0:-4] + '.zip'
+    info['respones_status'] = "success!"
+
 
 if __name__ == "__main__":
     bottle.run(host='127.0.0.1', port=9091, debug=True)

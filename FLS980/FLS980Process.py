@@ -27,6 +27,7 @@ class FLS980Process(object):
         self.file_to_process = file_to_process
         self.data_raw = []
         self.max = 0.0
+        self.info = []
 
     def read_file(self):
         self.data_raw = numpy.loadtxt(self.file_to_process, skiprows=3)
@@ -38,7 +39,10 @@ class FLS980Process(object):
             for j in range(0, len(self.data_raw[i])):
                 if self.max < self.data_raw[i][j]:
                     self.max = self.data_raw[i][j]
+        print('------>maximum found!')
         print('------>maximum is ' + str(self.max))
+        self.info.append('------>maximum found!')
+        self.info.append('------>maximum is ' + str(self.max))
 
     def normalize_data(self):
         """value_normalized = value_original / maximum"""
@@ -63,7 +67,11 @@ class FLS980Process(object):
         with open(self.file_to_process[:-4] + "_result.txt", 'w') as f: 
             f.writelines(headline)
             f.writelines(lines)
-        
+
+    @property
+    def response_info(self):
+        return self.info
+
     def main(self):
 
         self.read_file()
