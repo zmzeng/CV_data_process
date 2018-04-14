@@ -29,6 +29,7 @@ class xpsProcess(object):
 
     Attributes:
         self.file2Process (str): path to .txt file, define which file to process.
+        self.info (list): info of every process step.
         self.standardEnergyOfCarbon (float): standard energy of Carbon for revise.
         self.atoms (str): atom type found in the .txt file.
         self.spectrum (list): list of spectrum for each atom.
@@ -48,12 +49,12 @@ class xpsProcess(object):
         self.file2Process = file2Process
         self.info = []
         self.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
-        print('------>  ' + 'The file to process is ' + self.file2Process)
-        print('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon) +'\n')
-        self.info.append('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon))
         self.atoms = []
         self.spectrum = []
         self.delta = 0.0
+
+        print('------>  ' + 'The file to process is ' + self.file2Process)
+        self.info.append('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon))
         
 
     def readFile(self):
@@ -67,7 +68,6 @@ class xpsProcess(object):
             else:
                 break
         file.close()
-        print('------>  ' + 'Found atoms: '+ str(self.atoms[1:]) +'\n')
         self.info.append('------>  ' + 'Found atoms: '+ str(self.atoms[1:]))
 
     def getData(self, file, numberOfUnmatchedAtom):
@@ -134,11 +134,8 @@ class xpsProcess(object):
             i += 1
         energyOfCarbon = energyData[indexOfMaxCounts]
         self.delta = energyOfCarbon - self.standardEnergyOfCarbon
-        print('------>  ' + 'max position is ' + str(energyOfCarbon))
         self.info.append('------>  ' + 'max position is ' + str(energyOfCarbon))
-        print('------>  ' + 'max counts is ' + str(maxCounts))
         self.info.append('------>  ' + 'max counts is ' + str(maxCounts))
-        print('------>  ' + 'delta is ' + str(self.delta) + '\n')
         self.info.append('------>  ' + 'delta is ' + str(self.delta))
 
     def reviseData(self, energyData):
@@ -174,14 +171,12 @@ class xpsProcess(object):
         return self.info
 
     def main(self):
-        try:
-            self.readFile()
-        except FileNotFoundError: 
-            print('[Error] No such file or directory\n\n\n')
-            raise
+        self.readFile()
         self.getDelta()
         self.outputData()
-#        self.plotData()
+#       self.plotData()
+        for i in self.info:
+            print(i)
 
 if __name__=='__main__':
 

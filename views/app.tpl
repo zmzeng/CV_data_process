@@ -31,7 +31,7 @@
             <div class="column" style="text-align: center; margin:0 auto;">
               <input type="submit" value="upload" />
               %if respones_status != "":
-                  <p ><em style="color:red">{{ respones_status }}</em><br>
+                  <p><em style="color:red">{{ respones_status }}</em><br>
               %end
               %if download_link != "":
                   <a href="{{ download_link }}">

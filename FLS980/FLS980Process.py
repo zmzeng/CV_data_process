@@ -39,8 +39,6 @@ class FLS980Process(object):
             for j in range(0, len(self.data_raw[i])):
                 if self.max < self.data_raw[i][j]:
                     self.max = self.data_raw[i][j]
-        print('------>maximum found!')
-        print('------>maximum is ' + str(self.max))
         self.info.append('------>maximum found!')
         self.info.append('------>maximum is ' + str(self.max))
 
@@ -78,12 +76,17 @@ class FLS980Process(object):
         self.find_max()
         self.normalize_data()
         self.output_data()
+        for i in self.info:
+            print(i)
 
 if __name__ == '__main__':
     for i in range(1,len(sys.argv)):
-        print('\n------>Now process ' + sys.argv[i])
-        test = FLS980Process(sys.argv[i])
-        test.main()
+        try:
+            print('\n------>Now process ' + sys.argv[i])
+            test = FLS980Process(sys.argv[i])
+            test.main()
+        except Exception as e:
+            print('something wrong')
     input('\n------>all done!')
 
 

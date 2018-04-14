@@ -23,21 +23,22 @@ def xps_upload():
     info = get_app_info('xpsProcess')
     filename = get_upload_file()
     standard_energy_of_Carbon = bottle.request.forms.get('standard_energy_of_Carbon')
+    if filename != '':
+        try:
+            if(standard_energy_of_Carbon == ""):
+                test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
+            else:
+                test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
+            test.main()
+            info['response_info'] = test.response_info
+            wrap_result_files(filename, info)
+        except Exception as e:
+            print(e)
+            info['respones_status'] = "something wrong with your data file!"
+    else:
+        info['respones_status'] = "no file upload!"
 
-    try:
-        if(standard_energy_of_Carbon == ""):
-            test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
-        else:
-            test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
-        test.main()
-        info['response_info'] = test.response_info
-        wrap_result_files(filename, info)
-        return bottle.template('app', info)
-
-    except Exception as e:
-        print(e)
-        info['respones_status'] = "something wrong with your data file!"
-        return bottle.template('app', info)
+    return bottle.template('app', info)
 
 @bottle.route('/FLS980')
 def fls980():
@@ -48,16 +49,20 @@ def fls980():
 def fls980_upload():
     info = get_app_info('FLS980')
     filename = get_upload_file()
-    try:
-        test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
-        test.main()
-        info['response_info'] = test.response_info
-        wrap_result_files(filename, info)
-        return bottle.template('app', info)
-    except Exception as e:
-        print(e)
-        info['respones_status'] = "something wrong with your data file!"
-        return bottle.template('app', info)
+    if filename != '':
+        try:
+            test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
+            test.main()
+            info['response_info'] = test.response_info
+            wrap_result_files(filename, info)
+            return bottle.template('app', info)
+        except Exception as e:
+            print(e)
+            info['respones_status'] = "something wrong with your data file!"
+    else:
+        info['respones_status'] = "no file upload!"
+
+    return bottle.template('app', info)
 
 @bottle.route('/output/<filename:path>')
 def file_download(filename):
@@ -86,7 +91,7 @@ def get_upload_file():
         print('get and save upload file successfully')
         return file_upload.filename
     except Exception as e:
-        print(e)
+        #print(e)
         print('no file is upload.')
         return ''
 
