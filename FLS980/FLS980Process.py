@@ -19,9 +19,11 @@ class FLS980Process(object):
         self.file_to_process (str): define which file to process.
         self.data_raw (numpy.array): store all numerical data.
         self.max (float): maximum value of all data.
+        self.info (list): info of every process step.
 
     code by zmzeng12 20180323
     """
+    
     def __init__(self, file_to_process):
         super(FLS980Process, self).__init__()
         self.file_to_process = file_to_process
