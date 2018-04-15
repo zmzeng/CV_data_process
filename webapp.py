@@ -6,6 +6,7 @@ import subprocess
 import sys
 from xpsProcess import xpsProcess
 from FLS980 import FLS980Process
+from cvProcess import cvProcess
 
 path_of_temp_file='/tmp/WebApp/temp'
 
@@ -52,6 +53,30 @@ def fls980_upload():
     if filename != '':
         try:
             test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
+            test.main()
+            info['response_info'] = test.response_info
+            wrap_result_files(filename, info)
+            return bottle.template('app', info)
+        except Exception as e:
+            print(e)
+            info['respones_status'] = "something wrong with your data file!"
+    else:
+        info['respones_status'] = "no file upload!"
+
+    return bottle.template('app', info)
+
+@bottle.route('/cvProcess')
+def cvProcess():
+    info = get_app_info('cvProcess')
+    return bottle.template('app', info)
+
+@bottle.post('/cvProcess')
+def cvProcess_upload():
+    info = get_app_info('cvProcess')
+    filename = get_upload_file()
+    if filename != '':
+        try:
+            test = cvProcess.cvProcess(path_of_temp_file + '/' + filename)
             test.main()
             info['response_info'] = test.response_info
             wrap_result_files(filename, info)
