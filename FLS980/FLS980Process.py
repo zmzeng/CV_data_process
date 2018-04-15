@@ -19,14 +19,19 @@ class FLS980Process(object):
         self.file_to_process (str): define which file to process.
         self.data_raw (numpy.array): store all numerical data.
         self.max (float): maximum value of all data.
+        self.info (list): info of every process step.
 
     code by zmzeng12 20180323
     """
+    
     def __init__(self, file_to_process):
         super(FLS980Process, self).__init__()
         self.file_to_process = file_to_process
         self.data_raw = []
         self.max = 0.0
+        self.info = []
+
+        print('------>  ' + 'The file to process is ' + self.file_to_process)
 
     def read_file(self):
         self.data_raw = numpy.loadtxt(self.file_to_process, skiprows=3)
@@ -38,6 +43,8 @@ class FLS980Process(object):
             for j in range(0, len(self.data_raw[i])):
                 if self.max < self.data_raw[i][j]:
                     self.max = self.data_raw[i][j]
+        self.info.append('------>maximum found!')
+        self.info.append('------>maximum is ' + str(self.max))
 
     def normalize_data(self):
         """value_normalized = value_original / maximum"""
@@ -62,19 +69,27 @@ class FLS980Process(object):
         with open(self.file_to_process[:-4] + "_result.txt", 'w') as f: 
             f.writelines(headline)
             f.writelines(lines)
-        
+
+    @property
+    def response_info(self):
+        return self.info
+
     def main(self):
 
         self.read_file()
         self.find_max()
         self.normalize_data()
         self.output_data()
+        for i in self.info:
+            print(i)
 
 if __name__ == '__main__':
     for i in range(1,len(sys.argv)):
-        print('\n------>Now process ' + sys.argv[i])
-        test = FLS980Process(sys.argv[i])
-        test.main()
+        try:
+            test = FLS980Process(sys.argv[i])
+            test.main()
+        except Exception as e:
+            print('something wrong')
     input('\n------>all done!')
 
 

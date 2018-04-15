@@ -2,7 +2,9 @@
 
 import re
 import sys
-import matplotlib.pyplot as plt
+#import matplotlib
+#import matplotlib.pyplot as plt
+#matplotlib.use('Agg')
 
 class xpsProcess(object):
     """
@@ -27,6 +29,7 @@ class xpsProcess(object):
 
     Attributes:
         self.file2Process (str): path to .txt file, define which file to process.
+        self.info (list): info of every process step.
         self.standardEnergyOfCarbon (float): standard energy of Carbon for revise.
         self.atoms (str): atom type found in the .txt file.
         self.spectrum (list): list of spectrum for each atom.
@@ -43,24 +46,16 @@ class xpsProcess(object):
 
     def __init__(self, py, file2Process, standardEnergyOfCarbon=284.6):
 
-        welcome = '''
-#######################################################
-
-  X-ray photoelectron spectroscopy data process script  
-                    code by zmzeng.
-                       20180314
-
-#######################################################
-    '''
-        print(welcome)
         self.file2Process = file2Process
+        self.info = []
         self.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
-
-        print('------>  ' + 'The file to process is ' + self.file2Process)
-        print('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon) +'\n')
         self.atoms = []
         self.spectrum = []
         self.delta = 0.0
+
+        print('------>  ' + 'The file to process is ' + self.file2Process)
+        self.info.append('------>  ' + 'The standard energy of C is set to ' + str(self.standardEnergyOfCarbon))
+        
 
     def readFile(self):
         file = open(self.file2Process, 'r')
@@ -73,7 +68,7 @@ class xpsProcess(object):
             else:
                 break
         file.close()
-        print('------>  ' + 'Found atoms: '+ str(self.atoms[1:]) +'\n')
+        self.info.append('------>  ' + 'Found atoms: '+ str(self.atoms[1:]))
 
     def getData(self, file, numberOfUnmatchedAtom):
         """
@@ -91,7 +86,7 @@ class xpsProcess(object):
                 atom = self.regionMatchAtom(regionOfSweep)
             except Exception:
                 if numberOfUnmatchedAtom == 0:
-                    atom = 'whole spectrum'
+                    atom = 'whole_spectrum'
                 else:
                     atom = ('unknown atoms %s' % numberOfUnmatchedAtom)
                 numberOfUnmatchedAtom = numberOfUnmatchedAtom + 1
@@ -139,9 +134,9 @@ class xpsProcess(object):
             i += 1
         energyOfCarbon = energyData[indexOfMaxCounts]
         self.delta = energyOfCarbon - self.standardEnergyOfCarbon
-        print('------>  ' + 'max position is ' + str(energyOfCarbon))
-        print('------>  ' + 'max counts is ' + str(maxCounts))
-        print('------>  ' + 'delta is ' + str(self.delta) + '\n')
+        self.info.append('------>  ' + 'max position is ' + str(energyOfCarbon))
+        self.info.append('------>  ' + 'max counts is ' + str(maxCounts))
+        self.info.append('------>  ' + 'delta is ' + str(self.delta))
 
     def reviseData(self, energyData):
         """Revise data according to Delta.
@@ -161,29 +156,41 @@ class xpsProcess(object):
                 file.write('%.2f  %s  %.2f \n' %(energyRevised, counts, energy))
             file.close()
 
-    def plotData(self):
-        for i in range(0, len(self.atoms)):
-            plt.figure('XPS spectrum: ' + self.atoms[i])
-            plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
-            plt.xlabel('Energe (eV)')
-            plt.ylabel('Counts')
-            plt.title('XPS spectrum: ' + self.atoms[i])
-            plt.gca().invert_xaxis() 
-            plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
+    # def plotData(self):
+    #     for i in range(0, len(self.atoms)):
+    #        plt.figure('XPS spectrum: ' + self.atoms[i])
+    #        plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
+    #        plt.xlabel('Energe (eV)')
+    #        plt.ylabel('Counts')
+    #        plt.title('XPS spectrum: ' + self.atoms[i])
+    #        plt.gca().invert_xaxis() 
+    #        plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
+
+    @property
+    def response_info(self):
+        return self.info
 
     def main(self):
-        try:
-            self.readFile()
-        except FileNotFoundError: 
-            print('[Error] No such file or directory\n\n\n')
-            raise
+        self.readFile()
         self.getDelta()
         self.outputData()
-        self.plotData()
+#       self.plotData()
+        for i in self.info:
+            print(i)
 
 if __name__=='__main__':
 
-    
+    welcome = '''
+#######################################################
+
+X-ray photoelectron spectroscopy data process script  
+                code by zmzeng.
+                   20180314
+
+#######################################################
+'''
+    print(welcome)
+
     try:
         test = xpsProcess(*sys.argv)
     except TypeError as e:
@@ -201,12 +208,12 @@ if __name__=='__main__':
             standardEnergyOfCarbon = input('Or \n\nInput the standard energy of Carbon if it is *NOT* 284.6\n')
             if standardEnergyOfCarbon:
                 print('\n')
-                test = xpsProcess(*sys.argv, standardEnergyOfCarbon)
+                test.standardEnergyOfCarbon = float(standardEnergyOfCarbon)
                 test.main()
         except FileNotFoundError as e:
-            print(e)
-            input('\npress Enter to quit.\n\n')
+           print(e)
+           input('\npress Enter to quit.\n\n')
         except Exception as e:
-            print(e)
-            input('\npress Enter to quit.\n\n')
+           print(e)
+           input('\npress Enter to quit.\n\n')
 
