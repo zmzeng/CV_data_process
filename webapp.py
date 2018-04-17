@@ -22,20 +22,22 @@ def xps():
 @bottle.post('/xpsProcess')
 def xps_upload():
     info = get_app_info('xpsProcess')
-    filename = get_upload_file()
     standard_energy_of_Carbon = bottle.request.forms.get('standard_energy_of_Carbon')
-    if filename != '':
-        try:
-            if(standard_energy_of_Carbon == ""):
-                test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
-            else:
-                test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
-            test.main()
-            info['response_info'] = test.response_info
-            wrap_result_files(filename, info)
-        except Exception as e:
-            print(e)
-            info['respones_status'] = "something wrong with your data file!"
+    filenames = get_upload_file()
+    if filenames != []:
+        for filename in filenames:
+            try:
+                info['response_info'].append(filename + ' :')
+                if(standard_energy_of_Carbon == ""):
+                    test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename)
+                else:
+                    test = xpsProcess.xpsProcess('py', path_of_temp_file + '/' + filename, float(standard_energy_of_Carbon))
+                test.main()
+                info['response_info'].extend(test.response_info)
+            except Exception as e:
+                print(e)
+                info['response_info'].append('**something wrong with your data file!**')
+        wrap_result_files(filename, info)
     else:
         info['respones_status'] = "no file upload!"
 
@@ -49,17 +51,18 @@ def fls980():
 @bottle.post('/FLS980')
 def fls980_upload():
     info = get_app_info('FLS980')
-    filename = get_upload_file()
-    if filename != '':
-        try:
-            test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
-            test.main()
-            info['response_info'] = test.response_info
-            wrap_result_files(filename, info)
-            return bottle.template('app', info)
-        except Exception as e:
-            print(e)
-            info['respones_status'] = "something wrong with your data file!"
+    filenames = get_upload_file()
+    if filenames != []:
+        for filename in filenames:
+            try:
+                info['response_info'].append(filename + ' :')
+                test = FLS980Process.FLS980Process(path_of_temp_file + '/' + filename)
+                test.main()
+                info['response_info'].extend(test.response_info)
+            except Exception as e:
+                print(e)
+                info['response_info'].append('**something wrong with your data file!**')
+        wrap_result_files(filenames[0], info)
     else:
         info['respones_status'] = "no file upload!"
 
@@ -73,17 +76,18 @@ def cv():
 @bottle.post('/cvProcess')
 def cv_upload():
     info = get_app_info('cvProcess')
-    filename = get_upload_file()
-    if filename != '':
-        try:
-            test = cvProcess.cvProcess('py', path_of_temp_file + '/' + filename)
-            test.main()
-            info['response_info'] = test.response_info
-            wrap_result_files(filename, info)
-            return bottle.template('app', info)
-        except Exception as e:
-            print(e)
-            info['respones_status'] = "something wrong with your data file!"
+    filenames = get_upload_file()
+    if filenames != []:
+        for filename in filenames:
+            try:
+                info['response_info'].append(filename + ' :')
+                test = cvProcess.cvProcess('py', path_of_temp_file + '/' + filename)
+                test.main()
+                info['response_info'].extend(test.response_info)   
+            except Exception as e:
+                print(e)
+                info['response_info'].append('**something wrong with your data file!**')
+        wrap_result_files(filenames[0], info)
     else:
         info['respones_status'] = "no file upload!"
 
@@ -110,21 +114,23 @@ def get_app_info(appname):
 def get_upload_file():
     command = 'rm ' + path_of_temp_file + '/*'
     subprocess.call(command, shell=True)
-    file_upload = bottle.request.files.get('file_upload')
+    file_upload = bottle.request.files.getall('file_upload')
+    filenames = []
     try:
-        file_upload.save(path_of_temp_file, overwrite=True)
-        print('get and save upload file successfully')
-        return file_upload.filename
+        for file in file_upload:
+            file.save(path_of_temp_file, overwrite=True)
+            print('get and save upload file successfully：' + file.filename)
+            filenames.append(file.filename)
+        return filenames
     except Exception as e:
         #print(e)
         print('no file is upload.')
-        return ''
+        return []
 
 def wrap_result_files(filename, info):
     command = 'zip -jJ ' + path_of_temp_file + '/' + filename[0:-4] + '.zip ' + path_of_temp_file + '/*'
     subprocess.call(command, shell=True)
     print('wrap output files.')
-    info['response_info'].append('------> output in ' + filename[0:-4] + '.zip')
     info['response_info'].append('Click *here* to download.')
     info['download_link'] = '/output/' + filename[0:-4] + '.zip'
     info['respones_status'] = "success!"

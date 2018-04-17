@@ -8,6 +8,6 @@
       <br>
       <p><a role="button" href="xpsProcess" class="btn btn-success">XPS</a></p>
       <p><a role="button" href="FLS980" class="btn btn-success">FLS980</a></p>
-      <p><a role="button" href="FLS980" class="btn btn-success">CV</a></p>
+      <p><a role="button" href="cvProcess" class="btn btn-success">CV</a></p>
   </div>
 </div>

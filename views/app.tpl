@@ -17,7 +17,7 @@
         <form action="{{ upload_href }}" method="POST" enctype="multipart/form-data">
           <div class="row">
             <div class="column column-30" style="text-align: center; margin:0 auto;">
-              <input type="file" name="file_upload" />
+              <input type="file" name="file_upload" multiple="multiple"/>
             </div>
           </div>
           %for i in app_form:
