@@ -12,12 +12,12 @@ path_of_temp_file='/tmp/WebApp/temp'
 
 @bottle.route('/')
 def welcome():          
-    return bottle.template('welcome')                 
+    return bottle.template('index')                 
 
 @bottle.route('/xpsProcess')
 def xps():
     info = get_app_info('xpsProcess')
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.post('/xpsProcess')
 def xps_upload():
@@ -41,12 +41,12 @@ def xps_upload():
     else:
         info['respones_status'] = "no file upload!"
 
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.route('/FLS980')
 def fls980():
     info = get_app_info('FLS980')
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.post('/FLS980')
 def fls980_upload():
@@ -66,12 +66,12 @@ def fls980_upload():
     else:
         info['respones_status'] = "no file upload!"
 
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.route('/cvProcess')
 def cv():
     info = get_app_info('cvProcess')
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.post('/cvProcess')
 def cv_upload():
@@ -91,19 +91,19 @@ def cv_upload():
     else:
         info['respones_status'] = "no file upload!"
 
-    return bottle.template('app', info)
+    return bottle.template('apps', info)
 
 @bottle.route('/output/<filename:path>')
 def file_download(filename):
     print('download ' + filename)
     return bottle.static_file(filename, root=path_of_temp_file, download=filename)
 
-@bottle.route('/static/<filename>')
+@bottle.route('/ico/<filename>')
 def get_static(filename):
-    path = './' + filename
-    filename = filename + '.icon'
+    path = './' + filename[0:-4]
+    filename = filename
     print(path)
-    return bootle.static_file(filename, root=path)
+    return bottle.static_file(filename, root=path)
 
 def get_app_info(appname):
     path_json_of_appinfo = './' + appname + '/' + appname + '.json'
