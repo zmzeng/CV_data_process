@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import re, math, sys
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 class xyz2Distance(object):
@@ -113,7 +115,6 @@ class xyz2Distance(object):
         plt.ylabel('Distance (A)')
         plt.title('Distance (Ni-' + self.atom2cal + ')')
         plt.savefig(self.file2Process[0:-4] + '_Distance Ni-' + self.atom2cal + '.png')
-        plt.show()
 
     def main(self):
         self.readFile()

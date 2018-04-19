@@ -2,9 +2,10 @@
 
 import re
 import sys
-#import matplotlib
-#import matplotlib.pyplot as plt
-#matplotlib.use('Agg')
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 
 class xpsProcess(object):
     """
@@ -156,15 +157,15 @@ class xpsProcess(object):
                 file.write('%.2f  %s  %.2f \n' %(energyRevised, counts, energy))
             file.close()
 
-    # def plotData(self):
-    #     for i in range(0, len(self.atoms)):
-    #        plt.figure('XPS spectrum: ' + self.atoms[i])
-    #        plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
-    #        plt.xlabel('Energe (eV)')
-    #        plt.ylabel('Counts')
-    #        plt.title('XPS spectrum: ' + self.atoms[i])
-    #        plt.gca().invert_xaxis() 
-    #        plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
+    def plotData(self):
+        for i in range(0, len(self.atoms)):
+           plt.figure('XPS spectrum: ' + self.atoms[i])
+           plt.plot(self.reviseData(self.spectrum[i][0]), self.spectrum[i][1])
+           plt.xlabel('Energe (eV)')
+           plt.ylabel('Counts')
+           plt.title('XPS spectrum: ' + self.atoms[i])
+           plt.gca().invert_xaxis() 
+           plt.savefig(self.file2Process[0:-4] + '_' + self.atoms[i] + '.png')
 
     @property
     def response_info(self):
@@ -174,7 +175,7 @@ class xpsProcess(object):
         self.readFile()
         self.getDelta()
         self.outputData()
-#       self.plotData()
+        self.plotData()
         for i in self.info:
             print(i)
 

@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import re, math, sys
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 
 class xyz2Coordinate(object):
     """
@@ -93,7 +96,6 @@ class xyz2Coordinate(object):
         plt.ylabel('Distance (A)')
         plt.title('Coordinate - ' + self.atom)
         plt.savefig(self.file2Process[0:-4] + '_Coordinate-' + self.atom + '.png')
-        plt.show()
 
     # conver xyz to coordinate!
     def main(self):
