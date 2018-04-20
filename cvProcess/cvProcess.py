@@ -41,7 +41,7 @@ class cvProcess(object):
                     break
                 self.headerlines.append(line)
                 line = file.readline()
-        self.data_raw = numpy.loadtxt(self.file_to_process, skiprows=len(self.headerlines), delimiter=',')
+        self.data_raw = numpy.loadtxt(self.file_to_process, skiprows=len(self.headerlines), delimiter=',', comments='Segment')
         self.data_raw = self.data_raw.T
 
     def find_last_round(self):

@@ -12,7 +12,7 @@ path_of_temp_file='/tmp/WebApp/temp'
 
 @bottle.route('/')
 def welcome():          
-    return bottle.template('index')                 
+    return bottle.template('index')
 
 @bottle.route('/xpsProcess')
 def xps():
