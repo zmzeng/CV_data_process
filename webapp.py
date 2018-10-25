@@ -3,23 +3,24 @@
 import bottle
 import json
 import subprocess
-import sys
 from xpsProcess import xpsProcess
 from FLS980 import FLS980Process
 from cvProcess import cvProcess
 
-path_of_temp_file='/tmp/WebApp/temp'
+path_of_temp_file='./tmp/'
 
-@bottle.route('/')
+app = bottle.default_app()
+
+@app.route('/')
 def welcome():          
     return bottle.template('index')
 
-@bottle.route('/xpsProcess')
+@app.route('/xpsProcess')
 def xps():
     info = get_app_info('xpsProcess')
     return bottle.template('apps', info)
 
-@bottle.post('/xpsProcess')
+@app.post('/xpsProcess')
 def xps_upload():
     info = get_app_info('xpsProcess')
     standard_energy_of_Carbon = bottle.request.forms.get('standard_energy_of_Carbon')
@@ -43,12 +44,12 @@ def xps_upload():
 
     return bottle.template('apps', info)
 
-@bottle.route('/FLS980')
+@app.route('/FLS980')
 def fls980():
     info = get_app_info('FLS980')
     return bottle.template('apps', info)
 
-@bottle.post('/FLS980')
+@app.post('/FLS980')
 def fls980_upload():
     info = get_app_info('FLS980')
     filenames = get_upload_file()
@@ -68,12 +69,12 @@ def fls980_upload():
 
     return bottle.template('apps', info)
 
-@bottle.route('/cvProcess')
+@app.route('/cvProcess')
 def cv():
     info = get_app_info('cvProcess')
     return bottle.template('apps', info)
 
-@bottle.post('/cvProcess')
+@app.post('/cvProcess')
 def cv_upload():
     info = get_app_info('cvProcess')
     filenames = get_upload_file()
@@ -93,16 +94,21 @@ def cv_upload():
 
     return bottle.template('apps', info)
 
-@bottle.route('/output/<filename:path>')
+@app.route('/output/<filename:path>')
 def file_download(filename):
     print('download ' + filename)
     return bottle.static_file(filename, root=path_of_temp_file, download=filename)
 
-@bottle.route('/ico/<filename>')
-def get_static(filename):
+@app.route('/ico/<filename>')
+def get_ico(filename):
     path = './' + filename[0:-4]
     filename = filename
     print(path)
+    return bottle.static_file(filename, root=path)
+
+@app.route('/static/css/<filename>')
+def get_static(filename):
+    path = './css'
     return bottle.static_file(filename, root=path)
 
 def get_app_info(appname):
@@ -122,7 +128,7 @@ def get_upload_file():
             print('get and save upload file successfully：' + file.filename)
             filenames.append(file.filename)
         return filenames
-    except Exception as e:
+    except BaseException:
         #print(e)
         print('no file is upload.')
         return []
@@ -137,8 +143,5 @@ def wrap_result_files(filename, info):
 
 
 if __name__ == "__main__":
-    bottle.run(host='127.0.0.1', port=9091, debug=True)
-else:
-    application = bottle.default_app()
-    bottle.debug(True)
+    app.run(host='127.0.0.1', port=8080, debug=True, reloader=True)
 

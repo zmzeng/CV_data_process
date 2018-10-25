@@ -2,9 +2,9 @@
 
 import re
 import sys
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+#import matplotlib
+#matplotlib.use('Agg')
+#import matplotlib.pyplot as plt
 
 
 class xpsProcess(object):
@@ -80,8 +80,8 @@ class xpsProcess(object):
         """
         line = file.readline()
         # use RegExr to match the atom type
-        regionOfSweep = re.search('Original\t(\d*\.\d*\t\d*.\d*).*false\t([A-z ]*)', line).group(1)
-        atom = re.search('Original\t(\d*\.\d*\t\d*.\d*).*false\t([A-z ]*)', line).group(2)
+        regionOfSweep = re.search(r'Original\t(\d*\.\d*\t\d*.\d*).*false\t([A-z ]*)', line).group(1)
+        atom = re.search(r'Original\t(\d*\.\d*\t\d*.\d*).*false\t([A-z ]*)', line).group(2)
         if atom=='':        
             try:
                 atom = self.regionMatchAtom(regionOfSweep)
@@ -175,7 +175,7 @@ class xpsProcess(object):
         self.readFile()
         self.getDelta()
         self.outputData()
-        self.plotData()
+        #self.plotData()
         for i in self.info:
             print(i)
 

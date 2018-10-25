@@ -22,8 +22,8 @@
         <a class="item" href="/">
           Home
         </a>
-        <a class="item" href="http://chem.lifeof.today" target="_blank">
-          The Lin & Wang group
+        <a class="item" href="https://chem.ishard.today" target="_blank">
+          The Wang group
         </a>
         <div class="right item">
           <a href="https://github.com/zmzeng/DataProcessing" target="_blank">

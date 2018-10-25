@@ -12,10 +12,6 @@
               <span class="date">Automaticly revise all data of X-ray photoelectron spectroscopy according to the standard energy of Carbon (default is 284.6eV).</span>
             </div>
           </div>
-          <div class="extra content">
-              <i class="users icon"></i>
-              2 Members
-          </div>
         </div>
       </div>
       <div class="column">
@@ -29,10 +25,6 @@
               <span class="date">Automaticly normalized all data from FLS980.</span>
             </div>
           </div>
-          <div class="extra content">
-              <i class="users icon"></i>
-              2 Members
-          </div>
         </div>
       </div>
       <div class="column">
@@ -45,10 +37,6 @@
             <div class="meta">
               <span class="date">Automaticly output the last round data from CHI electrochemical workstation.</span>
             </div>
-          </div>
-          <div class="extra content">
-              <i class="users icon"></i>
-              2 Members
           </div>
         </div>
       </div>
